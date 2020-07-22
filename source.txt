@@ -1,0 +1,348 @@
+----CREATE DATABASE----
+
+drop database if exists patients;
+create database patients;
+use patients;
+
+create table doctors(
+id int primary key,
+name varchar(255) not null,
+room int not null,
+specialization varchar(255) not null,
+nzok enum('YES', 'NO') not null,
+phone varchar(255) not null,
+email varchar(255) not null
+);
+
+create table patients(
+id int primary key,
+name varchar(255) not null,
+egn varchar(10) not null,
+address varchar(255) not null
+);
+
+create table diagnoses(
+id int primary key,
+name varchar(255) not null
+);
+
+CREATE TABLE treatments(
+id int primary key   not null,
+treatment TEXT not null
+);
+
+
+create table patients_doctors(
+patient_id int not null,
+constraint foreign key(patient_id) references patients(id),
+doctor_id int not null,
+constraint foreign key(doctor_id) references doctors(id),
+unique key(patient_id, doctor_id)
+);
+
+create table diagnoses_treatments(
+diagnose_id int not null,
+constraint foreign key(diagnose_id) references diagnoses(id),
+treatment_id int not null,
+constraint foreign key(treatment_id) references treatments(id),
+unique key(diagnose_id, treatment_id)
+);
+
+create table patients_diagnoses(
+patient_id int not null,
+constraint foreign key(patient_id) references patients(id),
+diagnose_id int not null,
+constraint foreign key(diagnose_id) references diagnoses(id),
+unique key(patient_id, diagnose_id)
+);
+
+create table patients_healing(
+startOfHealing DATE not null,
+endOfHealing DATE not null,
+patient_id int not null,
+constraint foreign key(patient_id) references patients(id),
+unique key(startOfHealing, endOfHealing, patient_id)
+);
+
+
+CREATE TABLE rooms_doctors(
+dayOfWeek ENUM('Monday','Tuesday','Wednesday','Thursday','Friday',
+'Saturday','Sunday'),
+hoursOfDoctors TIME NOT NULL,
+doctor_room int not null,
+constraint foreign key(doctor_room) references doctors(id),
+UNIQUE KEY(dayOfWeek, hoursOfDoctors, doctor_room)
+);
+
+
+
+-----INSERT INTO DATABASE------
+use patients;
+
+INSERT INTO patients(id, name, egn, address)
+VALUES(1, 'Hristo Borisov Petkov', '8811211719', 'Sofia-Mladost 1'),
+(2, 'Peter Nedkov Petrov', '9108121530', 'Sofia-Simeonovo'),
+(3, 'Kristiyan Ognyanov Krustev', '7003081819', 'Sofia-Levski G'),
+(4, 'Tihomir Rumenov Dimitrov', '8409182228', 'Sofia-Dragalevtsi'),
+(5, 'Simeon Georgiev Alexandrov', '9701182222', 'Sofia-Geo Milev'),
+(6,  'Ina Georgieva Hristova', '0111230129', 'Sofia-Lyulin 1'),
+(7, 'Petya Petrova Radoslavova', '9209280022', 'Sofia-Vitosha'),
+(8, 'Gergana Vergilova Borisova', '8702041719', 'Sofia-Nadezda');
+
+INSERT INTO doctors(id, name, room, specialization, nzok, phone, email) 
+VALUES(1, 'Dimitar Todorov Todorov', '1220', 'pediatrician', 'YES', '0893847382', 'dtodorov@mail.bg'),
+(2, 'Zdravko Kamenov Angelov', '1220', 'cardiologist', 'YES', '0888857493', 'zangelov@abv.bg'),
+(3, 'Radoslav Velislavov Momchilov', '1122', 'pediatrician', 'NO', '0898937472', 'rmomchilov@abv.bg'),
+(4, 'Kristina Miroslavova Krusteva', '1122', 'gynecologist', 'YES', '0893847381', 'kkrusteva@mail.bg'),
+(5, 'Nancy Vladimirova Georgieva', '1133', 'gastroenterologist', 'YES', '0889978657', 'ngeorgieva@abv.bg'),
+(6, 'Lyudmila Petkova Simeonova', '1133', 'psychiatrist', 'NO', '0897655873', 'lsimeonva@abv.bg'),
+(7, 'Julieta Bogdanova Nikolova', '1144', 'neurologist', 'NO', '0898763348', 'jnikolova@abv.bg');
+
+INSERT INTO diagnoses(id, name)
+VALUES(1, 'hepatitis A'),
+(2, 'Bronchitis'),
+(3, 'Laryngitis'),
+(4, 'Pneumonia'),
+(5, 'Valvular heart diases'),
+(6, 'Heart Attack'),
+(7, 'Arithmea'),
+(8, 'Chlamydia'),
+(9, 'Ovarian cysts'),
+(10, 'Crabs'),
+(11, 'Gastritis'),
+(12, 'Stomach ulcer'),
+(13, 'Nephritis');
+
+INSERT INTO treatments(id, treatment)
+VALUES(1, ' anticoagulant medicines'),
+(2, 'Aspirin and pain relievers'),
+(3, 'corticosteroids and rest the voice'),
+(4, 'Antibiotics, cough medicine and pain relievers'),
+(5, 'Diuretics and prophylaxis of infective endocarditis'),
+(6, 'H2 receptor blockers and probiotics'),
+(7, 'Short-acting inhaled beta2-agonists and Imunnotherapy'),
+(8,  'Doxycicline and azithromycin'),
+(9, 'Birth control pills'),
+(10, 'Lots of fluids and diet management'),
+(11, 'Antibiotics Flagyl and Antacids to neutralize stomach acid'),
+(12,  'Ceftazidime'),
+(13, 'intravenous antibiotics and dialysis');
+
+
+INSERT INTO patients_doctors(patient_id, doctor_id)
+VALUES(1, 1),
+(1, 2),
+(1, 3),
+(2, 1),
+(2, 2),
+(2, 5),
+(3, 2),
+(3, 3),
+(4, 1),
+(4, 3),
+(4, 4),
+(5, 1),
+(5, 2),
+(5, 4),
+(5, 5),
+(6, 4),
+(6, 5),
+(7, 4),
+(8, 3),
+(8, 4),
+(8, 5);
+
+
+
+insert into patients_diagnoses(patient_id, diagnose_id)
+values(1, 1),
+(1, 5),
+(1, 7),
+(2, 2),
+(2, 3),
+(2, 5),
+(3, 2),
+(3, 3),
+(4, 6),
+(4, 7),
+(4, 8),
+(5, 3),
+(5, 8),
+(5, 10),
+(5, 11),
+(6, 10),
+(6, 11),
+(7, 11),
+(8, 3),
+(8, 9),
+(8, 11);
+
+insert into diagnoses_treatments(diagnose_id, treatment_id)
+values(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+(8, 8),
+(9,9),
+(10, 10),
+(11, 11),
+(12, 12),
+(13, 13);
+
+insert into patients_healing(startOfHealing, endOfHealing, patient_id)
+values('2011-02-02', '2011-03-05', 1),
+('2012-08-09', '2012-10-02', 1),
+('2013-05-04', '2015-11-11', 1),
+('2014-03-11', '2014-07-24', 2),
+('2015-01-03', '2015-03-19', 2),
+('2015-05-01', '2015-08-22', 2),
+('2016-07-23', '2016-08-25', 3),
+('2016-08-10', '2016-09-02', 3),
+('2013-12-22', '2014-02-01', 4),
+('2014-06-21', '2014-07-30', 4),
+( '2015-08-04', '2015-08-25', 4),
+( '2014-10-04', '2014-11-03', 5),
+('2016-04-20', '2016-05-19', 5),
+('2016-11-10', '2017-01-15', 5),
+('2017-01-13', '2017-02-02', 5),
+('2016-02-04', '2016-04-02', 6),
+('2018-01-04', '2018-03-18', 6),
+('2017-05-01', '2017-06-08', 7),
+('2016-02-02', '2016-04-17', 8),
+('2017-08-03', '2017-09-10', 8),
+('2018-02-03', '2018-03-10', 8);
+
+
+
+INSERT INTO rooms_doctors(dayOfWeek, hoursOfDoctors, doctor_room)
+VALUES('Monday', '08:00:00', 1),
+('Wednesday', '08:00:00', 1),
+('Friday', '08:00:00', 1),
+('Tuesday', '08:00:00', 2),
+('Thursday', '08:00:00', 2),
+('Monday', '08:00:00', 3),
+('Wednesday', '08:00:00', 3),
+('Friday', '08:00:00', 3),
+('Tuesday', '08:00:00', 4),
+('Thursday', '08:00:00', 4),
+('Monday', '08:00:00', 5),
+('Wednesday', '08:00:00', 5),
+('Friday', '08:00:00', 5);
+
+
+
+
+-----Select all pediatricians----
+
+use patients;
+
+select doctors.name as DoctorsName, doctors.specialization, doctors.room, doctors.phone
+from doctors
+where specialization='pediatrician';
+
+
+
+-----Select all doctors who share one room-----
+
+use patients;
+
+select doctors.room, count(doctors.id) numberOfDoctorsInOneRoom
+from doctors
+group by room;
+
+
+------Select patients with their diagnoses and treatment-------
+use patients;
+
+select patients.name as Patient, diagnoses.name as Diagnose, treatments.treatment
+from patients join diagnoses join treatments
+on patients.id in(
+	select patient_id
+    from patients_diagnoses
+    where patients_diagnoses.diagnose_id=diagnoses.id)
+where diagnoses.id in(
+	select diagnose_id
+    from diagnoses_treatments
+    where diagnoses_treatments.treatment_id=treatments.id)
+order by Patient;
+
+------Select doctors with their working hours and rooms--------
+
+use patients;
+
+select doctors.name, doctors.room, rooms_doctors.dayOfWeek, rooms_doctors.hoursOfDoctors
+from doctors left join rooms_doctors
+on doctor_room in(
+		select doctor_room
+        from rooms_doctors
+        where rooms_doctors.doctor_room=doctors.id);
+		
+		
+		
+		
+----------Select the diagnoses and count the days of healing for each--------		
+
+use patients;
+
+select sum(datediff(patients_healing.endOfHealing, patients_healing.startOfHealing)) as HealingDays,
+diagnoses.name as Diagnose
+from patients_healing join diagnoses join patients
+on diagnoses.id in(
+	select diagnose_id
+    from patients_diagnoses
+    where patients_diagnoses.diagnose_id=diagnoses.id
+    and patients_diagnoses.patient_id=patients.id)
+where patient_id in(
+	select patient_id
+    from patients_healing
+    where patients_healing.patient_id=patients.id)
+group by diagnoses.id
+order by Diagnose;
+		
+		
+----------Call a procedure with a cursor which finds the patients with 'Gastritis'-----------
+use patients;
+
+drop procedure if exists DiagnosesProcedure;
+delimiter *
+create procedure DiagnosesProcedure()
+begin
+declare finished int;
+declare tempDiagnose varchar(50);
+declare tempPatient varchar (100);
+declare PatientDiagnose CURSOR for
+SELECT patients.name, diagnoses.name
+from patients join diagnoses
+on patients.id in(
+	select patient_id
+    from patients_diagnoses
+    where patients_diagnoses.diagnose_id=diagnoses.id)
+where diagnoses.id in(
+	select id
+    from diagnoses
+    where name='Gastritis');
+declare continue handler FOR NOT FOUND set finished = 1;
+set finished=0;
+OPEN PatientDiagnose;
+diagnose_loop: while(finished=0)
+DO
+FETCH PatientDiagnose INTO  tempPatient, tempDiagnose;
+	IF(finished=1)
+    THEN
+    LEAVE diagnose_loop;
+    END IF;
+    SELECT tempDiagnose, tempPatient;
+end while;
+CLOSE PatientDiagnose;
+SET finished=0;
+SELECT 'Finished!';
+
+end;
+*
+delimiter *
+
+
+call DiagnosesProcedure();
